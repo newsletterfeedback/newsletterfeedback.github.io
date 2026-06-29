@@ -140,11 +140,6 @@ Description
 <script>
 
 function sendForm() {
-
-  // =========================
-  // 24 HOUR COOLDOWN CHECK
-  // =========================
-
   let lastSent = localStorage.getItem("lastSent");
 
   let now = Date.now();
@@ -160,10 +155,6 @@ function sendForm() {
     return;
 
   }
-
-  // =========================
-  // GET VALUES
-  // =========================
 
   let username = document.getElementById("username").value;
   let departments = document.getElementById("departments").value;
@@ -204,13 +195,7 @@ function sendForm() {
     body: JSON.stringify(data)
   });
 
-  // =========================
-  // SAVE COOLDOWN TIME
-  // =========================
-
   localStorage.setItem("lastSent", Date.now());
-
-  // clear inputs
 
   document.getElementById("username").value = "";
   document.getElementById("departments").value = "";
