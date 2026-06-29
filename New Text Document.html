@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Newsletter Feedback</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+* {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+body {
+  margin: 0;
+  background: #0d0d0d;
+  color: white;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.container {
+  width: 700px;
+}
+
+.header,
+.section {
+  background: #0f0f0f;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header p {
+  opacity: 0.7;
+}
+
+.section h2 {
+  margin-top: 0;
+}
+
+.required {
+  color: #f52727;
+  font-size: 12px;
+}
+
+.description {
+  opacity: 0.7;
+  margin-bottom: 15px;
+}
+
+input,
+textarea {
+  width: 95%;
+  background: #0a0a0a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  resize: none;
+}
+
+textarea {
+  height: 150px;
+}
+
+button {
+  background: #0a0a0a;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #151515;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Newsletter Feedback</h1>
+<p>give your feedback on the group and game as a whole, also towards the newsletter!</p><br>
+<p>all information towards you may be anonymous if you wish, and we may include <b>all</b> responses in our newsletter - if you include your information and we would like to include yours in the newsletter, we will ask you for confirmation of including your information beforehand.</p>
+</div>
+
+<div class="section">
+<h2>Username</h2>
+<p class="description"><b>optional</b> - maximum 20 characters</p>
+<input id="username" maxlength="20" placeholder="enter username">
+</div>
+
+<div class="section">
+<h2>Departments</h2>
+<p class="description"><b>optional</b> - maximum 100 characters</p>
+<input id="departments" maxlength="100" placeholder="enter departments">
+</div>
+
+<div class="section">
+<h2>Group Rank</h2>
+<p class="description"><b>optional</b> - maximum 10 characters</p>
+<input id="rank" maxlength="10" placeholder="enter group rank">
+</div>
+
+<div class="section">
+
+<h2>
+<span class="required">*</span>
+Description
+</h2>
+
+<p class="description"><b>required</b> - maximum 5000 characters - enter your feedback / thoughts on the group and game as a whole</p>
+
+<textarea id="description" maxlength="5000" placeholder="enter description"></textarea>
+
+</div>
+
+<div class="section">
+<button onclick="sendForm()">send</button>
+</div>
+
+</div>
+
+<script>
+
+function sendForm() {
+
+  // =========================
+  // 24 HOUR COOLDOWN CHECK
+  // =========================
+
+  let lastSent = localStorage.getItem("lastSent");
+
+  let now = Date.now();
+
+  if (lastSent && now - lastSent < 86400000) {
+
+    let remaining = 86400000 - (now - lastSent);
+
+    let hours = Math.ceil(remaining / 3600000);
+
+    alert("You can only send one submission every 24 hours. Try again in " + hours + " hour(s).");
+
+    return;
+
+  }
+
+  // =========================
+  // GET VALUES
+  // =========================
+
+  let username = document.getElementById("username").value;
+  let departments = document.getElementById("departments").value;
+  let rank = document.getElementById("rank").value;
+  let description = document.getElementById("description").value;
+
+  if (username === "") {
+    username = "N/A";
+  }
+
+  if (description === "") {
+    alert("Description is required");
+    return;
+  }
+
+  let webhook = "https://discord.com/api/webhooks/1424040998543032441/J_62lPuVVriqeUZ-U4QL6mnMx0OmmACfjeEikThwse99BsbotszbjCuotpCrpZjXGO1x";
+
+  let data = {
+    embeds: [{
+      title: "feedback post",
+      fields: [
+        { name: "username", value: username },
+        { name: "departments", value: departments || "N/A" },
+        { name: "rank", value: rank || "N/A" },
+        { name: "actual feedback", value: description }
+      ],
+      footer: {
+        text: "from the website"
+      }
+    }]
+  };
+
+  fetch(webhook, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  // =========================
+  // SAVE COOLDOWN TIME
+  // =========================
+
+  localStorage.setItem("lastSent", Date.now());
+
+  // clear inputs
+
+  document.getElementById("username").value = "";
+  document.getElementById("departments").value = "";
+  document.getElementById("rank").value = "";
+  document.getElementById("description").value = "";
+
+  alert("sent");
+
+}
+
+</script>
+
+</body>
+
+</html>
